@@ -28,7 +28,24 @@ app.get("/api/db-test", async (req, res) => {
     });
   }
 });
-
+app.get('/api/init-db', async (req, res) => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS reports (
+        id SERIAL PRIMARY KEY,
+        reporter_name TEXT NOT NULL,
+        location_text TEXT NOT NULL,
+        latitude DECIMAL(10,7),
+        longitude DECIMAL(10,7),
+        report_date TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    res.json({ status: 'ok', message: 'table created' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 // หน้าเว็บหลัก
 app.use(express.static("public"));
 
